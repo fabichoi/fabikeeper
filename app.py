@@ -9,3 +9,8 @@ print('DEBUG', app.config['DEBUG'])
 @app.route('/')
 def index():
     return 'welcome to the fabikeeper'
+
+
+if __name__ == '__main__':
+    print('run')
+    app.run(debug=True)
