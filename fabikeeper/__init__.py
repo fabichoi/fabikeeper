@@ -1,80 +1,58 @@
 from flask import Flask
+from flask import render_template
+from flask_wtf.csrf import CSRFProtect
 
-db = 'database'
+csrf = CSRFProtect()
 
 
 def create_app():
     print('run: create_app()')
     app = Flask(__name__)
 
+    app.config['SECRET_KEY'] = 'my_secret_key'
+
+    if app.config['DEBUG']:
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
+
+    '''CSRF INIT'''
+    csrf.init_app(app)
+
     @app.route('/')
     def index():
-        app.logger.info('RUN HELLO WORLD')
-        return 'welcome to the fabikeeper __init__'
+        return render_template('index.html')
 
-    ''' Routing '''
-    from flask import jsonify, redirect, url_for
-    from markupsafe import escape
+    from fabikeeper.forms.auth_form import LoginForm, RegisterForm
 
-    @app.route('/test/name/<name>')
-    def name(name):
-        return f'Name is {name}, {escape({type(name)})}'
+    @app.route('/auth/login', methods=['GET', 'POST'])
+    def login():
+        form = LoginForm()
+        if form.validate_on_submit():
+            user_id = form.data.get('user_id')
+            password = form.data.get('password')
+            return f'{user_id}, {password}'
+        else:
+            pass
+        return render_template('login.html', form=form)
 
-    @app.route('/test/id/<int:id>')
-    def id(id):
-        return 'ID: %d' % id
+    @app.route('/auth/register', methods=['GET', 'POST'])
+    def register():
+        form = RegisterForm()
+        if form.validate_on_submit():
+            user_id = form.data.get('user_id')
+            user_name = form.data.get('user_name')
+            password = form.data.get('password')
+            repassword = form.data.get('repassword')
+            return f'{user_id}, {password}'
+        else:
+            pass
+        return render_template('register.html', form=form)
 
-    @app.route('/test/path/<path:subpath>')
-    def path(subpath):
-        return subpath
+    @app.route('/auth/logout')
+    def logout():
+        return 'logout'
 
-    @app.route('/test/json')
-    def json():
-        return jsonify({'hello': 'world'})
-
-    @app.route('/test/redirect/<path:subpath>')
-    def redirect_url(subpath):
-        return redirect(subpath)
-
-    @app.route('/test/urlfor/<path:subpath>')
-    def urlfor(subpath):
-        return redirect(url_for('path', subpath=subpath))
-
-    from flask import g, current_app
-
-    @app.before_first_request
-    def before_first_request():
-        app.logger.info('BEFORE_FIRST_REQUEST')
-
-    @app.before_request
-    def before_request():
-        g.test = True
-        app.logger.info('BEFORE_REQUEST')
-
-    @app.after_request
-    def after_request(response):
-        app.logger.info(f'g.test:{g.test}')
-        app.logger.info(f'current_app.config:{current_app.config}')
-        app.logger.info('AFTER_REQUEST')
-        return response
-
-    @app.teardown_request
-    def teardown_request(exception):
-        app.logger.info('TEARDOWN_REQUEST')
-
-    @app.teardown_appcontext
-    def teardown_appcontext(exception):
-        app.logger.info('TEARDOWN_CONTEXT')
-
-    from flask import request
-
-    @app.route('/test/method/<id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
-    def method_test(id):
-        return jsonify({
-            'request.args': request.args,
-            'request.form': request.form,
-            'request.json': request.json,
-            'request.method': request.method
-        })
+    @app.errorhandler(404)
+    def page_404(error):
+        return render_template('/404.html'), 404
 
     return app
