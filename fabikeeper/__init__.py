@@ -10,6 +10,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'my_secret_key'
+    app.config['SESSION_COOKIE_NAME'] = 'fabikeeper'
 
     if app.config['DEBUG']:
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1

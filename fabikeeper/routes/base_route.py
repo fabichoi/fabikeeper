@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 
-NAME = 'BASE'
+NAME = 'base'
 
 bp = Blueprint(NAME, __name__)
 
