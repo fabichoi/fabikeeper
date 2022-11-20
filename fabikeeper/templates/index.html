@@ -9,5 +9,5 @@ Index
 {%- endblock %}
 
 {% block body -%}
-<h1>Hello!!! {{ session.get('user_id') }}</h1>
+<h1>Hello!!! {{ g.user.user_id }}</h1>
 {%- endblock %}
