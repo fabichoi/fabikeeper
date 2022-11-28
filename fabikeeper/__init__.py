@@ -17,9 +17,14 @@ def create_app():
     app.config['SESSION_COOKIE_NAME'] = 'fabikeeper'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/fabikeeper?charset=utf8'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list'
 
     if app.config['DEBUG']:
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
+        app.config['WTF_CSRF_ENABLED'] = False
+
+    '''CSRF INIT'''
+    csrf.init_app(app)
 
     '''DB INIT'''
     db.init_app(app)
@@ -33,8 +38,9 @@ def create_app():
     app.register_blueprint(base_route.bp)
     app.register_blueprint(auth_route.bp)
 
-    '''CSRF INIT'''
-    csrf.init_app(app)
+    '''Restx INIT'''
+    from fabikeeper.apis import blueprint as api
+    app.register_blueprint(api)
 
     '''REQUEST HOOK'''
 
