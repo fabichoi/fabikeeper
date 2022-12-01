@@ -9,19 +9,21 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 
-def create_app():
+def create_app(config=None):
     print('run: create_app()')
     app = Flask(__name__)
 
-    app.config['SECRET_KEY'] = 'my_secret_key'
-    app.config['SESSION_COOKIE_NAME'] = 'fabikeeper'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/fabikeeper?charset=utf8'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list'
+    """Flask Configs"""
+    from .configs import DevelopmentConfig, ProductionConfig
 
-    if app.config['DEBUG']:
-        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
-        app.config['WTF_CSRF_ENABLED'] = False
+    if not config:
+        if app.config['DEBUG']:
+            config = DevelopmentConfig()
+        else:
+            config = ProductionConfig()
+
+    print('run with:', config)
+    app.config.from_object(config)
 
     '''CSRF INIT'''
     csrf.init_app(app)
