@@ -26,6 +26,7 @@ post_parser.add_argument('password', required=True, help='유저 패스워드')
 @ns.response(400, 'User Id is already exists.')
 class UserList(Resource):
     @ns.marshal_list_with(user, skip_none=True)
+    @ns.deprecated
     def get(self):
         """유저 복수 조회"""
         data = UserModel.query.all()
@@ -33,6 +34,7 @@ class UserList(Resource):
 
     @ns.expect(post_parser)
     @ns.marshal_list_with(user, skip_none=True)
+    @ns.deprecated
     def post(self):
         """유저 생성"""
         args = post_parser.parse_args()
@@ -55,6 +57,7 @@ class UserList(Resource):
 @ns.param('id', '유저 고유 번호')
 class User(Resource):
     @ns.marshal_list_with(user, skip_none=True)
+    @ns.deprecated
     def get(self, id):
         """유저 단수 조회"""
         data = UserModel.query.get_or_404(id)
