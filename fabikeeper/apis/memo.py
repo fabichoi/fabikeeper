@@ -2,7 +2,7 @@ from flask import g
 
 from fabikeeper.models.user import User as UserModel
 from fabikeeper.models.memo import Memo as MemoModel
-from flask_restx import Namespace, fields, Resource
+from flask_restx import Namespace, fields, Resource, reqparse
 
 ns = Namespace(
     'memos',
@@ -17,6 +17,10 @@ memo = ns.model('Memo', {
     'created_at': fields.DateTime(description='메모 작성일'),
     'updated_at': fields.DateTime(description='메모 변경일'),
 })
+
+parser = reqparse.RequestParser()
+parser.add_argument('title', required=True, help='메모 제목')
+parser.add_argument('content', required=True, help='메모 내용')
 
 
 @ns.route('')
@@ -35,6 +39,20 @@ class MemoList(Resource):
         ).limit(10).all()
 
         return data
+
+    @ns.marshal_list_with(memo, skip_none=True)
+    @ns.expect(parser)
+    def post(self):
+        '''메모 생성'''
+        args = parser.parse_args()
+        memo = MemoModel(
+            title=args['title'],
+            content=args['content'],
+            user_id=g.user.id,
+        )
+        g.db.add(memo)
+        g.db.commit()
+        return memo, 201
 
 
 @ns.param('id', '메모 고유 아이디')
