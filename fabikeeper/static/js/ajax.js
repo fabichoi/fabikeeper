@@ -242,6 +242,7 @@ const MEMO = (function () {
                 url: 'api/memos',
                 type: 'get',
                 data: data,
+                async: false,
                 beforeSend: function () {
                     $customActions.addClass('inactive');
                 },
