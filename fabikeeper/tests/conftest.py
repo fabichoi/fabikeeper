@@ -1,4 +1,5 @@
 import os.path
+import shutil
 import sys
 
 sys.path.append('.')
@@ -39,6 +40,14 @@ def app(user_data, memo_data):
         db.session.add(MemoModel(**memo_data))
         db.session.commit()
         yield app
+
+        # /static/user_images/tester(==user_id)
+        path = os.path.join(
+            app.static_folder,
+            app.config['USER_STATIC_BASE_DIR'],
+            user_data['user_id']
+        )
+        shutil.rmtree(path, True)
 
         db.drop_all()
         db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace(

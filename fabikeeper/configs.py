@@ -10,6 +10,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@localhost/fabikeeper?charset=utf8'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SWAGGER_UI_DOC_EXPANSION = 'list'
+    USER_STATIC_BASE_DIR = 'user_images'
 
 
 class TestingConfig(Config):
