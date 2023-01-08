@@ -113,3 +113,4 @@ $RECYCLE.BIN/
 *.msp
 migrations/*
 *.db
+fabikeeper/static/user_images
