@@ -309,6 +309,25 @@ const MEMO = (function () {
         // 2) 그리드에 반영
         // 3) 에러시 얼럿
         // 4) 그리드 리셋: done - _resetGridLayout or masonry.layout
+
+        $.ajax({
+            url: '/api/memos/' + id,
+            type: 'put',
+            data: {
+                is_deleted: true
+            },
+            success: function (r) {
+                const $elems = $('#item' + r.id);
+                $GRID.masonry('remove', $elems);
+
+            },
+            error: function (e) {
+                alert(e.responseText);
+            },
+            complete: function () {
+                $GRID.masonry('layout');
+            }
+        });
     };
 
 
@@ -367,6 +386,21 @@ const MEMO = (function () {
         // 2) 메모 아이템 화면에서 제거
         // 4) 에러 노출
         // 5) 완료시 그리드 리셋과 추가조회: done - _resetGridLayout()
+        $.ajax({
+            url: '/api/memos' + id,
+            type: 'put',
+            data: data,
+            success: function (r) {
+                $elems = $('#item' + r.id);
+                $GRID.masonry('remove', $elems);
+            },
+            error: function (e) {
+                alert(e.responseText);
+            },
+            complete: function () {
+                _resetGridLayout();
+            }
+        });
     };
 
     /* 이미지 제거 */
